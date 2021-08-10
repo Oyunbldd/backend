@@ -1,41 +1,59 @@
 //controller ==> MVC ==> Model View Controller
+
 const category = require("../models/category");
 const Category = require("../models/category");
-exports.getCategories = (req, res, next) => {
+const MyError = require("../utils/myError");
+
+const asyncHandler = require("express-async-handler");
+
+exports.getCategories = asyncHandler(async (req, res, next) => {
+  var categories = await Category.find();
   res.status(200).json({
     success: true,
-    data: "All categories is here",
+    data: categories,
   });
-};
-exports.getCategory = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    data: `${req.params.id} -tai useriin data`,
-  });
-};
-exports.createCategory = async (req, res, next) => {
-  var category = await Category.create(req.body);
-  try {
-    res.status(200).json({
-      success: true,
-      data: category,
-    });
-  } catch (e) {
-    res.status(400).json({
-      success: false,
-      error: err,
-    });
+});
+
+exports.getCategory = asyncHandler(async (req, res, next) => {
+  var category = await Category.findById(req.params.id);
+  if (!category) {
+    throw new MyError(req.params.id + "Id tei category baihgui", 400);
   }
-};
-exports.deleteCategory = (req, res, next) => {
-  res.status(500).json({
-    success: false,
-    err: "Permission denied",
+  res.status(200).json({
+    success: true,
+    data: categories,
   });
-};
-exports.updateCategory = (req, res, next) => {
-  res.status(500).json({
-    success: false,
-    err: "Permission denied",
+});
+
+exports.createCategory = asyncHandler(async (req, res, next) => {
+  var category = await Category.create(req.body);
+  res.status(200).json({
+    success: true,
+    data: category,
   });
-};
+});
+
+exports.deleteCategory = asyncHandler(async (req, res, next) => {
+  const category = await Category.findByIdAndDelete(req.params.id);
+  if (!category) {
+    throw new MyError(req.params.id + "Id tai category baihgui baina", 400);
+  }
+  res.status(200).json({
+    success: true,
+    data: category,
+  });
+});
+
+exports.updateCategory = asyncHandler(async (req, res, next) => {
+  const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!category) {
+    throw new MyError(req.params.id + "Id tei category baihgui baina.", 400);
+  }
+  res.status(200).json({
+    success: true,
+    data: category,
+  });
+});

@@ -7,12 +7,7 @@ const {
   createCategory,
 } = require("../controller/categories");
 const router = express.Router();
-router.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: "All categories is here",
-  });
-});
+
 // router.post("/", (req, res) => {
 //   res.status(200).json({
 //     success: true,

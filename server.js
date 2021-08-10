@@ -4,9 +4,10 @@ const morgan = require("morgan");
 const connectDB = require("./db/db");
 //Router oruulj ireh
 const catergoiesRoutes = require("./routes/catergories");
+const errorHandler = require("./middlewate/error");
 
-//App iin tohirhoog process.env ruu achaallah
 dotenv.config({ path: "./config/config.env" });
+
 const app = express();
 connectDB();
 
@@ -14,6 +15,7 @@ connectDB();
 app.use(express.json());
 app.use(morgan("dev"));
 app.use("/api/v1/categories", catergoiesRoutes);
+app.use(errorHandler);
 
 const server = app.listen(
   process.env.PORT,
